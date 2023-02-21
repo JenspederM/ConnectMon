@@ -60,6 +60,15 @@ channels:
   - name: my-teams-team-name
     type: teams
     url: https://my-org.webhook.office.com/webhookb2/...
+
+```
+
+Possible future?:
+```yaml
+channels:
+  - name: my-teams-team-name
+    type: teams
+    url: https://my-org.webhook.office.com/webhookb2/...
     include:
         - i-want-to-monitor-this-connector
         - this-too

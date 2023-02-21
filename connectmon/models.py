@@ -13,6 +13,22 @@ class States:
 
 
 class Task(States):
+    """Represents a task in a connector
+
+    Args:
+        id (int): The task id
+        state (str): The task state
+        worker_id (str): The worker id
+
+    Attributes:
+        id (int): The task id
+        state (str): The task state
+        worker_id (str): The worker id
+        is_running (bool): True if the task is running
+        is_failed (bool): True if the task is failed
+        is_paused (bool): True if the task is paused
+    """
+
     def __init__(self, id, state, worker_id) -> None:
         self.id: int = id
         self.state: str = state
@@ -26,6 +42,26 @@ class Task(States):
 
 
 class Connector(States):
+    """Represents a connector
+
+    Args:
+        name (str): The name of the connector
+        type (str): The type of the connector
+        state (str): The state of the connector
+        worker_id (str): The worker id of the connector
+        tasks (list): A list of Task objects
+
+    Attributes:
+        name (str): The name of the connector
+        type (str): The type of the connector
+        state (str): The state of the connector
+        worker_id (str): The worker id of the connector
+        tasks (list): A list of Task objects
+        is_running (bool): True if the connector is running
+        is_failed (bool): True if the connector is failed
+        is_paused (bool): True if the connector is paused
+    """
+
     def __init__(
         self,
         name: str,

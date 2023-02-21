@@ -16,6 +16,23 @@ class Channels(BaseModel):
 
 
 class Settings(BaseSettings):
+    """Settings class for the Connect Monitor application
+
+    All args can be passed as environment variables.
+
+    If a config path is provided, the application will attempt to load
+    configuration from the file, which will override CHANNELS with the
+    channels configured in the supplied configuration file.
+
+    Args:
+        CONNECT_URL (str): The URL of the Connect cluster
+        ENVIRONMENT (str): The environment the application is running in
+        LOG_LEVEL (str): The log level for the application
+        LOG_FORMAT (str): The log format for the application
+        CONFIG_PATH (optional<str>): The path to the configuration file
+        CHANNELS (optional<Channels>): The channels to send messages to
+    """
+
     CONNECT_URL: str = "http://localhost:8083"
     ENVIRONMENT: str = "dev"
     LOG_LEVEL: str = "INFO"

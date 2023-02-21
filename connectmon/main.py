@@ -9,9 +9,10 @@ logger = get_logger(__name__)
 
 
 if __name__ == "__main__":
+    ## Setup your API you can get your environment variables from connectmon.config.settings
     connect = API(settings.CONNECT_URL)
 
-    if not connect.is_healthy():
+    if not connect.is_reachable():
         raise Exception("Cluster is not healthy")
 
     connectors = connect.get_all_connector_status()
@@ -26,4 +27,5 @@ if __name__ == "__main__":
         for channel in settings.CHANNELS.channels:
             logger.info(f"Sending message to {channel.name}...")
             if channel.type == "teams":
-                build_teams_message(channel.url, errors_and_warnings)
+                teams_msg = build_teams_message(channel.url, errors_and_warnings)
+                teams_msg.send()

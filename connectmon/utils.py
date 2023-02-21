@@ -6,7 +6,15 @@ import random
 from typing import List
 
 
-def create_dummy_connectors(n):
+def create_dummy_connectors(n: int) -> List[Connector]:
+    """Create a list of dummy connectors
+
+    Args:
+        n (int): The number of connectors to create
+
+    Returns:
+        List[Connector]: A list of Connector objects
+    """
     samples = []
 
     for i in range(n):
@@ -40,8 +48,19 @@ def create_dummy_connectors(n):
     return samples
 
 
-def build_teams_message(url: str, messages: List[dict]):
-    msg = pymsteams.connectorcard(url)
+def build_teams_message(
+    webhook_url: str, messages: List[dict]
+) -> pymsteams.connectorcard:
+    """Build a message for Microsoft Teams
+
+    Args:
+        webhook_url (str): The webhook url
+        messages (List[dict]): A list of messages
+
+    Returns:
+        pymsteams.connectorcard: A pymsteams connectorcard object
+    """
+    msg = pymsteams.connectorcard(webhook_url)
 
     error_section = pymsteams.cardsection()
     error_section.title("Connector Errors")
@@ -65,4 +84,5 @@ def build_teams_message(url: str, messages: List[dict]):
     msg.addSection(task_section)
 
     msg.summary("Connector Monitor Summary")
-    msg.send()
+
+    return msg

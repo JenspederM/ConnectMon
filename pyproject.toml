@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "connectmon"
 version = "0.1.0"
-description = ""
+description = "A tool for monitoring tasks and connectors in Kafka Connect."
 authors = ["Jens Peder Meldgaard <jenspederm@gmail.com>"]
 readme = "README.md"
 

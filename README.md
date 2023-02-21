@@ -17,34 +17,28 @@ poetry add connectmon
 ## Usage
 
 ```py
-from connectmon.config import settings
-from connectmon.api import API
+from connectmon import env, API
+from connectmon.utils import build_teams_message
 
-from pprint import pprint
-
-## Setup your API you can get your environment variables from connectmon.config.settings
-connect = API(settings.CONNECT_URL)
+## Setup Kafka Connect Rest API client and check if cluster is reachable
+connect = API(env.CONNECT_URL)
 
 if not connect.is_reachable():
     raise Exception("Cluster is not reachable")
 
-## Get a list of connectors and their status
+## Get all connectors and check if any are in a failed state
 connectors = connect.get_all_connector_status()
 
-## Restart any failed or paused connectors and collect messages along the way
-errors_and_warning = connect.restart_failed_connectors_if_any(connectors)
+## Restart failed connectors and tasks
+errors_and_warnings = connect.restart_failed_connectors_if_any(connectors)
 
-## If any channels have been registered in the configuration supplied through CONFIG_PATH 
-## And there were any connectors or tasks to reset
-## Then process each channel
-if settings.CHANNELS and len(errors_and_warnings) > 0:
-    for channel in settings.CHANNELS.channels:
-        
+## Send message to Teams channel if any errors or warnings
+if env.CHANNELS and len(errors_and_warnings) > 0:
+    for channel in env.CHANNELS.channels:
+        print(f"Sending message to {channel.name}...")
         if channel.type == "teams":
-            print(f"Sending message to {channel.name}...")
             teams_msg = build_teams_message(channel.url, errors_and_warnings)
             teams_msg.send()
-
 ```
 
 ## Configuration

@@ -1,30 +1,23 @@
-from connectmon.config import settings
-from connectmon.api import API
-from connectmon.logger import get_logger
-from connectmon.utils import build_teams_message, create_dummy_connectors
-
-from pprint import pprint
-
-logger = get_logger(__name__)
-
+from connectmon import env, API
+from connectmon.logger import logger
+from connectmon.utils import build_teams_message
 
 if __name__ == "__main__":
-    ## Setup your API you can get your environment variables from connectmon.config.settings
-    connect = API(settings.CONNECT_URL)
+    ## Setup Kafka Connect Rest API client and check if cluster is reachable
+    connect = API(env.CONNECT_URL)
 
     if not connect.is_reachable():
-        raise Exception("Cluster is not healthy")
+        raise Exception("Cluster is not reachable")
 
+    ## Get all connectors and check if any are in a failed state
     connectors = connect.get_all_connector_status()
-    # connectors = create_dummy_connectors(10)
 
-    pprint(connectors)
-
+    ## Restart failed connectors and tasks
     errors_and_warnings = connect.restart_failed_connectors_if_any(connectors)
 
-    if settings.CHANNELS and len(errors_and_warnings) > 0:
-        pprint(errors_and_warnings)
-        for channel in settings.CHANNELS.channels:
+    ## Send message to Teams channel if any errors or warnings
+    if env.CHANNELS and len(errors_and_warnings) > 0:
+        for channel in env.CHANNELS.channels:
             logger.info(f"Sending message to {channel.name}...")
             if channel.type == "teams":
                 teams_msg = build_teams_message(channel.url, errors_and_warnings)

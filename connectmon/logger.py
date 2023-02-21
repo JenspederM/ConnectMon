@@ -1,10 +1,10 @@
-from connectmon.config import settings
+from connectmon.env import env
 
 import logging
 
 logger = logging.getLogger("connectmon")
 
-logging.basicConfig(format=settings.LOG_FORMAT, level=settings.LOG_LEVEL)
+logging.basicConfig(format=env.LOG_FORMAT, level=env.LOG_LEVEL)
 
 
 def get_logger(name: str) -> logging.Logger:

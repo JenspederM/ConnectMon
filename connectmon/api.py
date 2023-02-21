@@ -146,9 +146,9 @@ class API:
 
 
 if __name__ == "__main__":
-    from connectmon.config import settings
+    from connectmon.env import env
 
-    api = API(settings.CONNECT_URL)
+    api = API(env.CONNECT_URL)
     print(api.is_reachable())
     print(api.get_connector_status("my-file-sink"))
     print(api.get_all_connector_status())

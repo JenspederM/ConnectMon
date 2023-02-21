@@ -42,13 +42,13 @@ if env.CHANNELS and len(errors_and_warnings) > 0:
 ```
 
 ## Configuration
-| Name | Type | Description |
-|------|------|-------------|
-| CONNECT_URL | string | The URL of the Connect cluster |
-| ENVIRONMENT | string | The environment the application is running in |
-| LOG_LEVEL | string | The log level for the application |
-| LOG_FORMAT | string | The log format for the application |
-| CONFIG_PATH | Optional string | The path to the configuration file |
+| Name | Type | Description | Default |
+|------|------|-------------| ------- | 
+| CONNECT_URL | string | The URL of the Connect cluster | `"http://localhost:8083"` |
+| ENVIRONMENT | string | The environment the application is running in | `"dev"` |
+| LOG_LEVEL | string | The log level for the application | `"INFO"` |
+| LOG_FORMAT | string | The log format for the application | `"(asctime)s - ..."` |
+| CONFIG_PATH | Optional string | The path to the configuration file | `""` |
 
 If `CONFIG_PATH` is provided, the application will attempt to load
 configuration from the file, which will set `settings.CHANNELS` with the

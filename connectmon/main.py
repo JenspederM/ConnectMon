@@ -14,8 +14,8 @@ if __name__ == "__main__":
     if not connect.is_healthy():
         raise Exception("Cluster is not healthy")
 
-    # connectors = api.get_all_connector_status()
-    connectors = create_dummy_connectors(10)
+    connectors = connect.get_all_connector_status()
+    # connectors = create_dummy_connectors(10)
 
     pprint(connectors)
 

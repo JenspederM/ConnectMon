@@ -30,6 +30,14 @@ class Settings(BaseSettings):
     def __repr__(self):
         return self.__str__()
 
+    @validator("LOG_LEVEL", pre=True)
+    def validate_log_level(cls, v: str):
+        if v.upper() not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+            raise ValueError(
+                "LOG_LEVEL must be one of DEBUG, INFO, WARNING, ERROR, CRITICAL"
+            )
+        return v.upper()
+
     @validator("CHANNELS", pre=True)
     def load_config(cls, v: Optional[str], values: Dict[str, any]):
         config_path = values.get("CONFIG_PATH")

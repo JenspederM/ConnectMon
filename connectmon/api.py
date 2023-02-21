@@ -17,6 +17,7 @@ class API:
         return self.__str__()
 
     def is_healthy(self) -> requests.Response:
+        self.logger.debug(f"Checking health of {self.url}")
         return requests.get(f"{self.url}/").status_code == 200
 
     def get_all_connector_status(self) -> requests.Response:

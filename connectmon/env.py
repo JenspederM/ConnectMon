@@ -1,19 +1,9 @@
-from pydantic import BaseModel, BaseSettings, validator
-from typing import Optional, Dict, List
+from connectmon.models import Channels
+
+from pydantic import BaseSettings, validator
+from typing import Optional, Dict
 from pathlib import Path
 import yaml
-
-
-class Channel(BaseModel):
-    name: str
-    type: str
-    url: str
-    include: List[str]
-    exclude: List[str]
-
-
-class Channels(BaseModel):
-    channels: List[Channel]
 
 
 class Environment(BaseSettings):

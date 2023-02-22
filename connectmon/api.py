@@ -30,21 +30,25 @@ class API:
     def __repr__(self) -> str:
         return self.__str__()
 
+    def _call_api(self, method: str, url: str) -> requests.Response:
+        """Call the Connect REST API
+
+        Returns:
+            requests.Response: The response from the API
+        """
+        return requests.request(method, url, verify=not env.SKIP_TLS_VERIFY)
+
     def is_reachable(self) -> bool:
         """Check if the Connect cluster is reachable
 
         Returns:
             bool: True if the cluster is reachable, False otherwise
         """
-        is_reachable = (
-            requests.get(f"{self.url}/", verify=env.SKIP_TLS_VERIFY).status_code == 200
-        )
+        is_reachable = self._call_api("GET", f"{self.url}/").status_code == 200
         self.logger.info(
             f"Checking reachability of {self.url} - {'cluster is reachable' if is_reachable else 'cluster is not reachable'}"
         )
-        return (
-            requests.get(f"{self.url}/", verify=env.SKIP_TLS_VERIFY).status_code == 200
-        )
+        return is_reachable
 
     def get_all_connectors(self) -> List[Connector]:
         """Get all connectors
@@ -52,14 +56,13 @@ class API:
         Returns:
             List[Connector]: A list of Connector objects
         """
-        response = requests.get(
-            f"{self.url}/connectors?expand=status", verify=env.SKIP_TLS_VERIFY
-        )
+        response = self._call_api("GET", f"{self.url}/connectors?expand=status")
+
+        connectors = []
 
         if response.status_code == 200:
             connector_statuses = response.json()
 
-            connectors = []
             for value in connector_statuses.values():
                 data = value["status"]
                 tasks = []
@@ -89,9 +92,7 @@ class API:
             requests.Response: The response from the API
         """
         self.logger.info(f"Resuming {connector.name}")
-        return requests.put(
-            f"{self.url}/connectors/{connector.name}/resume", verify=env.SKIP_TLS_VERIFY
-        )
+        return self._call_api("PUT", f"{self.url}/connectors/{connector.name}/resume")
 
     def restart_connector(self, connector: Connector) -> requests.Response:
         """Restart a failed connector
@@ -103,10 +104,7 @@ class API:
             requests.Response: The response from the API
         """
         self.logger.info(f"Restarting {connector.name}")
-        return requests.post(
-            f"{self.url}/connectors/{connector.name}/restart",
-            verify=env.SKIP_TLS_VERIFY,
-        )
+        return self._call_api("POST", f"{self.url}/connectors/{connector.name}/restart")
 
     def restart_task(self, connector: Connector, task: Task) -> requests.Response:
         """Restart a failed task
@@ -119,9 +117,8 @@ class API:
             requests.Response: The response from the API
         """
         self.logger.info(f"Restarting task {task.id} for {connector.name}")
-        return requests.post(
-            f"{self.url}/connectors/{connector.name}/tasks/{task.id}/restart",
-            verify=env.SKIP_TLS_VERIFY,
+        return self._call_api(
+            "POST", f"{self.url}/connectors/{connector.name}/tasks/{task.id}/restart"
         )
 
     def restart_failed_connectors_if_any(

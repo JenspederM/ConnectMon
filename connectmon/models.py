@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List, Optional
 
 
 class States:
@@ -13,6 +14,23 @@ class States:
     @property
     def is_failed(self) -> bool:
         return self.state == "FAILED"
+
+
+class Channel(BaseModel):
+    name: str
+    type: str
+    url: str
+    actions: Optional[List[str]] = [
+        "RESTART_FAILED_CONNECTORS",
+        "RESTART_FAILED_TASKS",
+        "RESUME_PAUSED_CONNECTORS",
+    ]
+    include: Optional[List[str]] = ["*"]
+    exclude: Optional[List[str]] = []
+
+
+class Channels(BaseModel):
+    channels: List[Channel]
 
 
 class Message(BaseModel):
@@ -33,11 +51,27 @@ class Message(BaseModel):
     level: str
     message: str
 
-    def __str__(self) -> str:
-        return f"Message(message={self.message}, code={self.code})"
 
-    def __repr__(self) -> str:
-        return self.__str__()
+class Messages(BaseModel):
+    connector_errors: List[Message] = []
+    connector_warnings: List[Message] = []
+    task_errors: List[Message] = []
+
+    def __len__(self) -> int:
+        return (
+            len(self.connector_errors)
+            + len(self.connector_warnings)
+            + len(self.task_errors)
+        )
+
+    def add_connector_error(self, msg: Message):
+        self.connector_errors.append(msg)
+
+    def add_connector_warning(self, msg: Message):
+        self.connector_warnings.append(msg)
+
+    def add_task_error(self, msg: Message):
+        self.task_errors.append(msg)
 
 
 class Task(BaseModel, States):
@@ -60,12 +94,6 @@ class Task(BaseModel, States):
     id: int
     state: str
     worker_id: str
-
-    def __str__(self) -> str:
-        return f"Task(id={self.id}, state={self.state}, worker_id={self.worker_id})"
-
-    def __repr__(self) -> str:
-        return self.__str__()
 
 
 class Connector(BaseModel, States):
@@ -94,9 +122,3 @@ class Connector(BaseModel, States):
     worker_id: str
     tasks: list
     type: str
-
-    def __str__(self) -> str:
-        return f"Connector(name={self.name}, type={self.type} is_running={self.is_running}, state={self.state}, worker_id={self.worker_id}, tasks={self.tasks})"
-
-    def __repr__(self) -> str:
-        return self.__str__()

@@ -206,5 +206,8 @@ class TeamsService(MessagingService):
 
     def send_message(self):
         card = self.build_message()
-        card.send()
-        self.logger.info("Sent message to Teams")
+        if len(self.messages) > 0:
+            card.send()
+            self.logger.info("Sent message to Teams")
+        else:
+            self.logger.info("Nothing to report, skipping message")

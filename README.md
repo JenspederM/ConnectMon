@@ -43,11 +43,12 @@ Base configuration for ConnectMon is handled through Environment Variables.
 
 | Name | Type | Description | Default |
 |------|------|-------------| ------- | 
- **CONFIG_PATH** | Optional string | The path to the channel configuration file | `""` |
- **CONNECT_URL** | string | The URL of the Connect cluster | `"http://localhost:8083"` |
- ENVIRONMENT | string | The environment the application is running in | `"dev"` |
- LOG_LEVEL | string | The log level for the application | `"INFO"` |
- LOG_FORMAT | string | The log format for the application | `"(asctime)s - ..."` |
+| **CONFIG_PATH** | Optional string | The path to the channel configuration file | `""` |
+| **CONNECT_URL** | string | The URL of the Connect cluster | `"http://localhost:8083"` |
+| SKIP_TLS_VERIFY | boolean | Whether to skip TLS verification | `False` |
+| ENVIRONMENT | string | The environment the application is running in | `"dev"` |
+| LOG_LEVEL | string | The log level for the application | `"INFO"` |
+| LOG_FORMAT | string | The log format for the application | `"(asctime)s - ..."` |
 
 > *Name in bold are required!*
 

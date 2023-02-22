@@ -1,5 +1,7 @@
 from pydantic import BaseModel, BaseSettings, validator
 from typing import Optional, Dict, List
+from pathlib import Path
+import os
 import yaml
 
 
@@ -58,10 +60,15 @@ class Environment(BaseSettings):
     @validator("CHANNELS", pre=True)
     def load_config(cls, v: Optional[str], values: Dict[str, any]):
         config_path = values.get("CONFIG_PATH")
-        if config_path:
-            with open(config_path, "r") as f:
-                config: Channels = Channels(**yaml.safe_load(f))
-                return config
+        path = Path(f"{config_path}")
+
+        if not path.exists():
+            msg = f"Config file {config_path} does not exist"
+            raise ValueError(msg)
+
+        with open(config_path, "r") as f:
+            config: Channels = Channels(**yaml.safe_load(f))
+            return config
 
     class Config:
         env_file = ".env"

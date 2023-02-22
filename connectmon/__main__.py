@@ -2,7 +2,9 @@ from connectmon import env, API
 from connectmon.logger import logger
 from connectmon.utils import build_teams_message
 
-if __name__ == "__main__":
+
+def main():
+
     ## Setup Kafka Connect Rest API client and check if cluster is reachable
     connect = API(env.CONNECT_URL)
 
@@ -22,3 +24,7 @@ if __name__ == "__main__":
             if channel.type == "teams":
                 teams_msg = build_teams_message(channel.url, errors_and_warnings)
                 teams_msg.send()
+
+
+if __name__ == "__main__":
+    main()

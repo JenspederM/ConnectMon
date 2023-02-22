@@ -7,12 +7,10 @@ def main():
     ## Setup Kafka Connect Rest API client and check if cluster is reachable
     connect = API(env.CONNECT_URL)
 
-    if not env.CHANNELS:
-        raise Exception("No channels defined")
-
     ## Get all connectors and check if any are in a failed state
-    connectors = create_dummy_connectors(10)  # connect.get_all_connectors()
+    connectors = connect.get_all_connectors()
 
+    ## Loop through all channels and send a message if any connectors are in a failed state
     for channel in env.CHANNELS.channels:
         if channel.type == "teams":
             service = TeamsService(connect, channel)

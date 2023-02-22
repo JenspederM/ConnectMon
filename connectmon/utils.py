@@ -117,37 +117,63 @@ def process_channel_connectors(
     messages = Messages()
 
     for connector in connectors:
+        is_included = (
+            # If include is empty, include all connectors
+            len(channel.include) == 0
+            # If include is *, include all connectors
+            or "*" in channel.include
+            # If include contains the connector name, include the connector
+            or connector.name in channel.include
+        )
+
         if connector.name in channel.exclude:
-            logger.info(f"Skipping {connector.name}...")
+            logger.info(f"Excluding {connector.name}...")
+            continue
+        elif not is_included:
+            logger.info(f"{connector.name} is not included...")
             continue
 
-        if "*" in channel.include or connector.name in channel.include:
+        if is_included:
             if connector.is_failed:
-                msg = Message(
-                    sender=connector.name,
-                    level="error",
-                    message=f"Restarting {connector.name}",
+                if "RESTART_FAILED_CONNECTORS" in channel.actions:
+                    connect.restart_connector(connector)
+                    level = "info"
+                    msg = f"Restarting {connector.name}"
+                else:
+                    level = "error"
+                    msg = f"{connector.name} is not running, skipping restart"
+                    logger.info(msg)
+
+                messages.add_connector_error(
+                    Message(sender=connector.name, level=level, message=msg)
                 )
-                connect.restart_connector(connector)
-                messages.add_connector_error(msg)
+
             elif connector.is_paused:
-                msg = Message(
-                    sender=connector.name,
-                    level="warn",
-                    message=f"Resuming {connector.name}",
+                if "RESUME_PAUSED_CONNECTORS" in channel.actions:
+                    connect.resume_connector(connector)
+                    level = "info"
+                    msg = f"Resuming {connector.name}"
+                else:
+                    level = "warn"
+                    msg = f"{connector.name} is paused, skipping resume"
+                    logger.info(msg)
+                messages.add_connector_warning(
+                    Message(sender=connector.name, level=level, message=msg)
                 )
-                connect.resume_connector(connector)
-                messages.add_connector_warning(msg)
 
             for task in connector.tasks:
                 if task.is_failed:
-                    msg = Message(
-                        sender=connector.name,
-                        level="error",
-                        message=f"Restarting task {task.id} for {connector.name}",
+                    if "RESTART_FAILED_TASKS" in channel.actions:
+                        connect.restart_task(connector, task)
+                        level = "info"
+                        msg = f"Restarting task {task.id} for {connector.name}"
+                    else:
+                        level = "error"
+                        msg = f"Task {task.id} for {connector.name} is not running, skipping restart"
+                        logger.info(msg)
+                    messages.add_task_error(
+                        Message(sender=connector.name, level=level, message=msg)
                     )
-                    connect.restart_task(connector, task)
-                    messages.add_task_error(msg)
 
     return messages
 

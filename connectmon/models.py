@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from enum import Enum
 
 
 class States:
@@ -16,11 +17,18 @@ class States:
         return self.state == "FAILED"
 
 
+class ChannelActions(str, Enum):
+    RESTART_FAILED = "RESTART_FAILED"
+    RESTART_FAILED_CONNECTORS = "RESTART_FAILED_CONNECTORS"
+    RESTART_FAILED_TASKS = "RESTART_FAILED_TASKS"
+    RESUME_PAUSED_CONNECTORS = "RESUME_PAUSED_CONNECTORS"
+
+
 class Channel(BaseModel):
     name: str
     type: str
     url: str
-    actions: Optional[List[str]] = [
+    actions: Optional[List[ChannelActions]] = [
         "RESTART_FAILED_CONNECTORS",
         "RESTART_FAILED_TASKS",
         "RESUME_PAUSED_CONNECTORS",

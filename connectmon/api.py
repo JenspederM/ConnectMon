@@ -1,5 +1,5 @@
 from connectmon.logger import get_logger
-from connectmon.models import Connector, Task
+from connectmon.models import Connector, Task, Message
 
 from typing import List
 import requests
@@ -30,7 +30,8 @@ class API:
         """Check if the Connect cluster is reachable
 
         Returns:
-            bool: True if the cluster is reachable, False otherwise"""
+            bool: True if the cluster is reachable, False otherwise
+        """
         self.logger.debug(f"Checking health of {self.url}")
         return requests.get(f"{self.url}/").status_code == 200
 
@@ -106,14 +107,14 @@ class API:
 
     def restart_failed_connectors_if_any(
         self, connectors: List[Connector]
-    ) -> List[dict]:
+    ) -> List[Message]:
         """Restart failed connectors and tasks
 
         Args:
             connectors (List[Connector]): A list of Connector objects
 
         Returns:
-            List[dict]: A list of errors and warning messages
+            List[Message]: A list of errors and warning messages
         """
         errors_and_warnings = []
 
@@ -122,23 +123,32 @@ class API:
 
             if not connector.is_running:
                 if connector.is_paused:
-                    msg = {"level": "warn", "message": f"Resuming {connector.name}"}
-                    self.logger.warn(msg["message"])
+                    msg = Message(
+                        sender=connector.name,
+                        level="warn",
+                        message=f"Resuming {connector.name}",
+                    )
+                    self.logger.warn(msg.message)
                     errors_and_warnings.append(msg)
                     self.resume_connector(connector)
                 else:
-                    msg = {"level": "error", "message": f"Restarting {connector.name}"}
-                    self.logger.error(msg["message"])
+                    msg = Message(
+                        sender=connector.name,
+                        level="error",
+                        message=f"Restarting {connector.name}",
+                    )
+                    self.logger.error(msg.message)
                     errors_and_warnings.append(msg)
                     self.restart_connector(connector)
 
             for task in connector.tasks:
                 if not task.is_running:
-                    msg = {
-                        "level": "error",
-                        "message": f"Restarting task {task.id} for {connector.name}",
-                    }
-                    self.logger.error(msg["message"])
+                    msg = Message(
+                        sender=connector.name,
+                        level="error",
+                        message=f"Restarting task {task.id} for {connector.name}",
+                    )
+                    self.logger.error(msg.message)
                     errors_and_warnings.append(msg)
                     self.restart_task(connector, task)
 

@@ -1,6 +1,6 @@
 from connectmon import env, API
 from connectmon.logger import logger
-from connectmon.utils import build_teams_message
+from connectmon.utils import build_teams_message, create_dummy_connectors
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
         raise Exception("Cluster is not reachable")
 
     ## Get all connectors and check if any are in a failed state
-    connectors = connect.get_all_connector_status()
+    connectors = create_dummy_connectors(10)  #  connect.get_all_connector_status()
 
     ## Restart failed connectors and tasks
     errors_and_warnings = connect.restart_failed_connectors_if_any(connectors)

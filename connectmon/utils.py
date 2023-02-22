@@ -1,4 +1,4 @@
-from connectmon.models import Connector, Task
+from connectmon.models import Connector, Task, Message
 
 import pymsteams
 import random
@@ -49,7 +49,7 @@ def create_dummy_connectors(n: int) -> List[Connector]:
 
 
 def build_teams_message(
-    webhook_url: str, messages: List[dict]
+    webhook_url: str, messages: List[Message]
 ) -> pymsteams.connectorcard:
     """Build a message for Microsoft Teams
 
@@ -72,12 +72,12 @@ def build_teams_message(
     task_section.title("Task Errors")
 
     for message in messages:
-        if message["level"] == "error" and "task" in message["message"]:
-            task_section.addFact(f"{message['level']}", f"{message['message']}")
-        elif message["level"] == "error":
-            error_section.addFact(f"{message['level']}", f"{message['message']}")
-        elif message["level"] == "warn":
-            warn_section.addFact(f"{message['level']}", f"{message['message']}")
+        if message.level == "error" and "task" in message.message:
+            task_section.addFact(f"{message.level}", f"{message.message}")
+        elif message.level == "error":
+            error_section.addFact(f"{message.level}", f"{message.message}")
+        elif message.level == "warn":
+            warn_section.addFact(f"{message.level}", f"{message.message}")
 
     msg.addSection(error_section)
     msg.addSection(warn_section)

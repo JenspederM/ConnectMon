@@ -1,3 +1,6 @@
+from pydantic import BaseModel
+
+
 class States:
     @property
     def is_running(self) -> bool:
@@ -12,7 +15,32 @@ class States:
         return self.state == "FAILED"
 
 
-class Task(States):
+class Message(BaseModel):
+    """Represents a message from the API
+
+    Args:
+        sender (str): The sender of the message
+        level (str): The level of the message
+        message (str): The message
+
+    Attributes:
+        sender (str): The sender of the message
+        level (str): The level of the message
+        message (str): The message
+    """
+
+    sender: str
+    level: str
+    message: str
+
+    def __str__(self) -> str:
+        return f"Message(message={self.message}, code={self.code})"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+class Task(BaseModel, States):
     """Represents a task in a connector
 
     Args:
@@ -29,10 +57,9 @@ class Task(States):
         is_paused (bool): True if the task is paused
     """
 
-    def __init__(self, id, state, worker_id) -> None:
-        self.id: int = id
-        self.state: str = state
-        self.worker_id: str = worker_id
+    id: int
+    state: str
+    worker_id: str
 
     def __str__(self) -> str:
         return f"Task(id={self.id}, state={self.state}, worker_id={self.worker_id})"
@@ -41,7 +68,7 @@ class Task(States):
         return self.__str__()
 
 
-class Connector(States):
+class Connector(BaseModel, States):
     """Represents a connector
 
     Args:
@@ -62,19 +89,11 @@ class Connector(States):
         is_paused (bool): True if the connector is paused
     """
 
-    def __init__(
-        self,
-        name: str,
-        type: str,
-        state: str,
-        worker_id: str,
-        tasks: list,
-    ) -> None:
-        self.name: str = name
-        self.state: str = state
-        self.worker_id: str = worker_id
-        self.tasks: list = tasks
-        self.type: str = type
+    name: str
+    state: str
+    worker_id: str
+    tasks: list
+    type: str
 
     def __str__(self) -> str:
         return f"Connector(name={self.name}, type={self.type} is_running={self.is_running}, state={self.state}, worker_id={self.worker_id}, tasks={self.tasks})"

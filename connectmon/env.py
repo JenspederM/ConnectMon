@@ -1,7 +1,6 @@
 from pydantic import BaseModel, BaseSettings, validator
 from typing import Optional, Dict, List
 from pathlib import Path
-import os
 import yaml
 
 

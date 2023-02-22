@@ -80,11 +80,11 @@ Supported fields for channels are:
 
 | Name | Type | Description | Default |
 | ---- | ---- | ----------- | ------- |
-| **name** | string | Name of the channel | "" |
-| **type** | string | Type of channel | "" |
-| **url**  | string | Url to send payload to | "" |
+| **name** | string | Name of the channel | `""` |
+| **type** | string | Type of channel | `""` |
+| **url**  | string | Url to send payload to | `""` |
 | actions | list of strings | Can be any of `RESTART_FAILED`, `RESTART_FAILED_CONNECTORS`, `RESTART_FAILED_TASKS`, `RESUME_PAUSED_CONNECTORS` | `RESTART_FAILED` |
-| include | list of strings | Names of connectors to include for this channel | ["*"] |
-| exclude | list of strings | Names of connectors to *exclude* for this channel | [] |
+| include | list of strings | Names of connectors to include for this channel | `["*"]` |
+| exclude | list of strings | Names of connectors to *exclude* for this channel | `[]` |
 
 > Current only Microsoft Teams or `type: "teams"` is supported.

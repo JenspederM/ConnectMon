@@ -20,6 +20,9 @@ class API:
         self.url = url
         self.logger = get_logger(self.__class__.__name__)
 
+        if not self.is_reachable():
+            raise Exception("Cluster is not reachable")
+
     def __str__(self) -> str:
         return f"API(url={self.url})"
 
@@ -32,11 +35,14 @@ class API:
         Returns:
             bool: True if the cluster is reachable, False otherwise
         """
-        self.logger.debug(f"Checking health of {self.url}")
+        is_reachable = requests.get(f"{self.url}/").status_code == 200
+        self.logger.info(
+            f"Checking reachability of {self.url} - {'cluster is reachable' if is_reachable else 'cluster is not reachable'}"
+        )
         return requests.get(f"{self.url}/").status_code == 200
 
-    def get_all_connector_status(self) -> List[Connector]:
-        """Get the status of all connectors
+    def get_all_connectors(self) -> List[Connector]:
+        """Get all connectors
 
         Returns:
             List[Connector]: A list of Connector objects
@@ -75,7 +81,7 @@ class API:
         Returns:
             requests.Response: The response from the API
         """
-        self.logger.debug(f"Resuming {connector.name}")
+        self.logger.info(f"Resuming {connector.name}")
         return requests.put(f"{self.url}/connectors/{connector.name}/resume")
 
     def restart_connector(self, connector: Connector) -> requests.Response:
@@ -87,7 +93,7 @@ class API:
         Returns:
             requests.Response: The response from the API
         """
-        self.logger.debug(f"Restarting {connector.name}")
+        self.logger.info(f"Restarting {connector.name}")
         return requests.post(f"{self.url}/connectors/{connector.name}/restart")
 
     def restart_task(self, connector: Connector, task: Task) -> requests.Response:
@@ -100,7 +106,7 @@ class API:
         Returns:
             requests.Response: The response from the API
         """
-        self.logger.debug(f"Restarting task {task.id} for {connector.name}")
+        self.logger.info(f"Restarting task {task.id} for {connector.name}")
         return requests.post(
             f"{self.url}/connectors/{connector.name}/tasks/{task.id}/restart"
         )
@@ -161,4 +167,4 @@ if __name__ == "__main__":
     api = API(env.CONNECT_URL)
     print(api.is_reachable())
     print(api.get_connector_status("my-file-sink"))
-    print(api.get_all_connector_status())
+    print(api.get_all_connectors())

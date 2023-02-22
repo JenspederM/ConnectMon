@@ -17,6 +17,7 @@ class Environment(BaseSettings):
 
     Args:
         CONNECT_URL (str): The URL of the Connect cluster
+        SKIP_TLS_VERIFY (bool): Whether to skip TLS verification
         ENVIRONMENT (str): The environment the application is running in
         LOG_LEVEL (str): The log level for the application
         LOG_FORMAT (str): The log format for the application
@@ -25,6 +26,7 @@ class Environment(BaseSettings):
     """
 
     CONNECT_URL: str = "http://localhost:8083"
+    SKIP_TLS_VERIFY: bool = False
     ENVIRONMENT: str = "dev"
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "%(asctime)s - %(levelname)s - [%(name)s] - %(message)s"
@@ -52,7 +54,7 @@ class Environment(BaseSettings):
         path = Path(f"{config_path}")
 
         if not path.exists():
-            msg = f"Config file {config_path} does not exist"
+            msg = f"CONFIG_PATH '{config_path}' does not exist"
             raise ValueError(msg)
 
         with open(config_path, "r") as f:

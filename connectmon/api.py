@@ -1,5 +1,6 @@
 from connectmon.logger import get_logger
 from connectmon.models import Connector, Task, Message
+from connectmon.env import env
 
 from typing import List
 import requests
@@ -35,11 +36,15 @@ class API:
         Returns:
             bool: True if the cluster is reachable, False otherwise
         """
-        is_reachable = requests.get(f"{self.url}/").status_code == 200
+        is_reachable = (
+            requests.get(f"{self.url}/", verify=env.SKIP_TLS_VERIFY).status_code == 200
+        )
         self.logger.info(
             f"Checking reachability of {self.url} - {'cluster is reachable' if is_reachable else 'cluster is not reachable'}"
         )
-        return requests.get(f"{self.url}/").status_code == 200
+        return (
+            requests.get(f"{self.url}/", verify=env.SKIP_TLS_VERIFY).status_code == 200
+        )
 
     def get_all_connectors(self) -> List[Connector]:
         """Get all connectors
@@ -47,7 +52,9 @@ class API:
         Returns:
             List[Connector]: A list of Connector objects
         """
-        response = requests.get(f"{self.url}/connectors?expand=status")
+        response = requests.get(
+            f"{self.url}/connectors?expand=status", verify=env.SKIP_TLS_VERIFY
+        )
 
         if response.status_code == 200:
             connector_statuses = response.json()
@@ -82,7 +89,9 @@ class API:
             requests.Response: The response from the API
         """
         self.logger.info(f"Resuming {connector.name}")
-        return requests.put(f"{self.url}/connectors/{connector.name}/resume")
+        return requests.put(
+            f"{self.url}/connectors/{connector.name}/resume", verify=env.SKIP_TLS_VERIFY
+        )
 
     def restart_connector(self, connector: Connector) -> requests.Response:
         """Restart a failed connector
@@ -94,7 +103,10 @@ class API:
             requests.Response: The response from the API
         """
         self.logger.info(f"Restarting {connector.name}")
-        return requests.post(f"{self.url}/connectors/{connector.name}/restart")
+        return requests.post(
+            f"{self.url}/connectors/{connector.name}/restart",
+            verify=env.SKIP_TLS_VERIFY,
+        )
 
     def restart_task(self, connector: Connector, task: Task) -> requests.Response:
         """Restart a failed task
@@ -108,7 +120,8 @@ class API:
         """
         self.logger.info(f"Restarting task {task.id} for {connector.name}")
         return requests.post(
-            f"{self.url}/connectors/{connector.name}/tasks/{task.id}/restart"
+            f"{self.url}/connectors/{connector.name}/tasks/{task.id}/restart",
+            verify=env.SKIP_TLS_VERIFY,
         )
 
     def restart_failed_connectors_if_any(

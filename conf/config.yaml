@@ -1,0 +1,11 @@
+channels:
+  - name: ccoe
+    type: teams
+    url: https://v0816.webhook.office.com/webhookb2/abf5f1a5-1fa4-4abc-9fd9-f6166fe4e21f@97438f73-bbae-43e4-a212-b7df1b899597/IncomingWebhook/06a41aa8c0bc4ede867d047a2fc3057c/18c8a94b-de6a-482d-9d68-a3c63d028e8d
+    actions: 
+      - RESTART_FAILED
+    include:
+      - "*"
+    exclude:
+      - sample-3
+

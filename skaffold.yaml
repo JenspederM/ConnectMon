@@ -1,0 +1,12 @@
+apiVersion: skaffold/v3
+kind: Config
+metadata:
+  name: connectmon
+manifests:
+  rawYaml:
+    - "./manifests/kafka-persistent-single.yaml"
+    - "./manifests/kafka-connect.yaml"
+    - "./manifests/source-connector.yaml"
+deploy:
+  kubectl:
+    defaultNamespace: kafka

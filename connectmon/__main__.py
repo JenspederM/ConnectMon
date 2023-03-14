@@ -9,6 +9,7 @@ def main():
 
     ## Get all connectors and check if any are in a failed state
     connectors = connect.get_all_connectors()
+    # connectors = create_dummy_connectors(10)
 
     ## Loop through all channels and send a message if any connectors are in a failed state
     for channel in env.CHANNELS.channels:
